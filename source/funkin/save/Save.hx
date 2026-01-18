@@ -125,6 +125,7 @@ class Save implements ConsoleClass
           debugDisplay: 'Off',
           debugDisplayBGOpacity: 50,
           hapticsMode: 'All',
+          timeBarMode: 'Time Left',
           hapticsIntensityMultiplier: 1,
           autoPause: true,
           vsyncMode: 'Off',
@@ -1628,6 +1629,12 @@ typedef SaveDataOptions =
    * @default `1`
    */
   var hapticsIntensityMultiplier:Float;
+
+  /**
+   * If changed, will affect the text shown on the time bar.
+   * @default `Time Left`
+   */
+  var timeBarMode:String;
 
   /**
    * If enabled, the game will automatically pause when tabbing out.

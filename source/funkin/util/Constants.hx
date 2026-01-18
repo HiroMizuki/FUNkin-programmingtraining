@@ -20,7 +20,7 @@ class Constants
    * The title of the game, for debug printing purposes.
    * Change this if you're making an engine.
    */
-  public static final TITLE:String = "Friday Night Funkin'";
+  public static final TITLE:String = "Friday Night Funkin' - Ultimate Mods Port";
 
   /**
    * The current version number of the game.
@@ -125,6 +125,11 @@ class Constants
   public static final COLOR_HEALTH_BAR_GREEN:FlxColor = 0xFF66FF33;
 
   /**
+   * The color used by the song time that hasn`t passed.
+   */
+  public static final COLOR_TIME_BAR_BLACK:FlxColor = 0xFF000000;
+
+  /**
    * The base colors used by notes.
    */
   public static var COLOR_NOTES:Array<FlxColor> = [
@@ -186,10 +191,15 @@ class Constants
   public static final DEFAULT_DIFFICULTY_LIST_ERECT:Array<String> = ['erect', 'nightmare'];
 
   /**
+   * Default list of difficulties for Erect mode.
+   */
+  public static final DEFAULT_DIFFICULTY_LIST_SG:Array<String> = ['sg'];
+
+  /**
    * List of all difficulties used by the base game.
    * Includes Erect and Nightmare.
    */
-  public static final DEFAULT_DIFFICULTY_LIST_FULL:Array<String> = ['easy', 'normal', 'hard', 'erect', 'nightmare'];
+  public static final DEFAULT_DIFFICULTY_LIST_FULL:Array<String> = ['easy', 'normal', 'hard', 'erect', 'nightmare', 'sg'];
 
   /**
    * Default player character for charts.
@@ -219,7 +229,7 @@ class Constants
   /**
    * Standardized variations for charts
    */
-  public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico', 'bf'];
+  public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'sg', 'pico', 'bf'];
 
   /**
    * Default sticker pack for transitions
@@ -640,4 +650,22 @@ class Constants
    * Default vibration sharpness.
    */
   public inline static final DEFAULT_VIBRATION_SHARPNESS:Float = 1;
+}
+
+enum abstract TimeBarMode(Int) from Int to Int // FUCK YOU
+{
+  // Time Left
+  var LEFT:Int = 0;
+
+  // Song Name
+  var NAME:Int = 1;
+
+  // Time Elapsed
+  var ELAPSED:Int = 2;
+
+  // Alternative
+  var ALT:Int = 3;
+
+  // Disabled
+  var OFF:Int = 4;
 }

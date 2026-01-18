@@ -7,6 +7,7 @@ import funkin.mobile.util.InAppPurchasesUtil;
 import funkin.save.Save;
 import funkin.util.WindowUtil;
 import funkin.util.HapticUtil.HapticsMode;
+import funkin.util.Constants.TimeBarMode;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 
 /**
@@ -243,6 +244,55 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.hapticsMode = string;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, gosh im tired.
+   * @default `Time Left`
+   */
+  public static var timeBarMode(get, set):TimeBarMode;
+
+  static function get_timeBarMode():TimeBarMode
+  {
+    var value = Save?.instance?.options?.timeBarMode ?? "Time Left";
+
+    return switch (value)
+    {
+      case "Song Name":
+        TimeBarMode.NAME;
+      case "Time Elapsed":
+        TimeBarMode.ELAPSED;
+      case "Alternative":
+        TimeBarMode.ALT;
+      case "Disabled":
+        TimeBarMode.OFF;
+      default:
+        TimeBarMode.LEFT;
+    };
+  }
+
+  static function set_timeBarMode(value:TimeBarMode):TimeBarMode
+  {
+    var string;
+
+    switch (value)
+    {
+      case TimeBarMode.NAME:
+        string = "Song Name";
+      case TimeBarMode.ELAPSED:
+        string = "Time Elapsed";
+      case TimeBarMode.ALT:
+        string = "Alternative";
+      case TimeBarMode.OFF:
+        string = "Disabled";
+      default:
+        string = "Time Left";
+    };
+
+    var save:Save = Save.instance;
+    save.options.timeBarMode = string;
     save.flush();
     return value;
   }

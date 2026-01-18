@@ -373,6 +373,8 @@ class PlayState extends MusicBeatSubState
 
   public var isSubState(get, never):Bool;
 
+  public var songPercent:Float = 0;
+
   function get_isSubState():Bool
   {
     return this._parentState != null;
@@ -509,6 +511,13 @@ class PlayState extends MusicBeatSubState
   public var healthBarBG:FunkinSprite;
 
   /**
+   * The FlxText which displays the current score.
+   */
+  var timeText:FlxText;
+
+  var timeTextName:FlxText;
+
+  /**
    * The health icon representing the player.
    */
   public var iconP1:Null<HealthIcon>;
@@ -517,6 +526,16 @@ class PlayState extends MusicBeatSubState
    * The health icon representing the opponent.
    */
   public var iconP2:Null<HealthIcon>;
+
+  /**
+   * The bar which displays the song`s time duration/left.
+   */
+  public var timeBar:FlxBar;
+
+  /**
+   * The background image used for the time bar.
+   */
+  public var timeBarBG:FunkinSprite;
 
   /**
    * The sprite group containing active player's strumline notes.
@@ -730,6 +749,11 @@ class PlayState extends MusicBeatSubState
     healthBarBG = FunkinSprite.create(0, 0, 'healthBar');
     healthBar = new FlxBar(0, 0, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), null, 0, 2);
     scoreText = new FlxText(0, 0, 0, '', 20);
+
+    timeBarBG = FunkinSprite.create(0, 0, 'timeBar');
+    timeBar = new FlxBar(0, 0, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), null, 0, 1);
+    timeText = new FlxText(0, 0, 0, '', 20);
+    timeTextName = new FlxText(0, 0, 0, '', 20);
 
     // Combo & Pop Up
     comboPopUps = new PopUpStuff(noteStyle);
@@ -1109,6 +1133,8 @@ class PlayState extends MusicBeatSubState
           trace('[WARNING] Normal Conductor Update!! are you lagging?');
           Conductor.instance.update();
         }
+
+        updateTimeText();
       }
     }
 
@@ -1857,9 +1883,13 @@ class PlayState extends MusicBeatSubState
   function initHealthBar():Void
   {
     var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
+    var timeBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.2 : FlxG.height * 0.8;
     #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-      && !ControlsHandler.usingExternalInputDevice) healthBarYPos = FlxG.height * 0.1;
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice)
+    {
+      healthBarYPos = FlxG.height * 0.1;
+      timeBarYPos = FlxG.height * 0.2;
+    }
     #end
 
     healthBarBG.y = healthBarYPos;
@@ -1877,6 +1907,45 @@ class PlayState extends MusicBeatSubState
     healthBar.zIndex = 801;
     add(healthBar);
 
+    timeBarBG.y = timeBarYPos;
+    timeBarBG.screenCenter(X);
+    timeBarBG.scrollFactor.set(0, 0);
+    timeBarBG.zIndex = 803;
+
+    timeText.y = timeBarBG.y - 8;
+    timeText.x = timeBarBG.x + (timeBarBG.width / 2) - 32;
+    timeText.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    timeText.alpha = 0;
+    timeText.borderSize = 2;
+    timeText.scrollFactor.set();
+    timeText.zIndex = 805;
+
+    timeTextName.y = timeBarBG.y - 8;
+    timeTextName.x = timeBarBG.x + (timeBarBG.width / 2) - 128;
+    timeTextName.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    timeTextName.alpha = 0;
+    timeTextName.borderSize = 2;
+    timeTextName.scrollFactor.set();
+    timeTextName.zIndex = 805;
+
+    timeBar.x = timeBarBG.x + 4;
+    timeBar.y = timeBarBG.y + 4;
+    timeBar.parent = this;
+    timeBar.parentVariable = 'songPercent';
+    timeBar.scrollFactor.set();
+    timeBar.createFilledBar(Constants.COLOR_TIME_BAR_BLACK, Constants.COLOR_HEALTH_BAR_GREEN);
+    timeBar.zIndex = 804;
+    if (Preferences.timeBarMode == 3) startNameTimer();
+
+    if (Preferences.timeBarMode != 4)
+    {
+      add(timeBarBG);
+      add(timeBar);
+    }
+
+    add(timeText);
+    add(timeTextName);
+
     // The score text below the health bar.
     scoreText.x = healthBarBG.x + healthBarBG.width - 190;
     scoreText.y = healthBarBG.y + 30;
@@ -1888,6 +1957,10 @@ class PlayState extends MusicBeatSubState
     // Move the health bar to the HUD camera.
     healthBar.cameras = [camHUD];
     healthBarBG.cameras = [camHUD];
+    timeBar.cameras = [camHUD];
+    timeBarBG.cameras = [camHUD];
+    timeText.cameras = [camHUD];
+    timeTextName.cameras = [camHUD];
     scoreText.cameras = [camHUD];
   }
 
@@ -2450,6 +2523,17 @@ class PlayState extends MusicBeatSubState
     FlxG.sound.music.time = startTimestamp;
     FlxG.sound.music.pitch = playbackRate;
 
+    if (Preferences.timeBarMode != 4)
+    {
+      switch (Preferences.timeBarMode)
+      {
+        case 1:
+          FlxTween.tween(timeTextName, {alpha: 1}, 1, {ease: FlxEase.quartOut});
+        default:
+          FlxTween.tween(timeText, {alpha: 1}, 1, {ease: FlxEase.quartOut});
+      }
+    }
+
     // Prevent the volume from being wrong.
     FlxG.sound.music.volume = 1.0;
     if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
@@ -2540,6 +2624,65 @@ class PlayState extends MusicBeatSubState
       var commaSeparated:Bool = true;
       scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScore, false, commaSeparated)}';
     }
+  }
+
+  /**
+     * Updates the position and contents of the time text.
+     * TODO: Make an option to change the contents.
+     */
+  var secondsTotal:Int = 0;
+
+  function updateTimeText():Void
+  {
+    var curTime:Float = Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset);
+    songPercent = (curTime / FlxG.sound.music.length);
+
+    var songCalc:Float = (FlxG.sound.music.length - curTime);
+    if (Preferences.timeBarMode == 0) songCalc = curTime;
+
+    secondsTotal = Math.floor(songCalc / 1000);
+    if (secondsTotal < 0) secondsTotal = 0;
+
+    timeTextName.text = '${currentChart?.songName} - ${currentDifficulty.replace('-', (' ')).toTitleCase()}';
+
+    timeText.text = FlxStringUtil.formatTime(secondsTotal);
+  }
+
+  function startNameTimer():Void
+  {
+    FlxTween.tween(timeText, {alpha: 0}, 1,
+      {
+        startDelay: 6,
+        ease: FlxEase.quartOut,
+        onComplete: function(_) {
+          FlxTween.tween(timeTextName, {alpha: 1}, 1,
+            {
+              ease: FlxEase.quartOut,
+              onComplete: (_) -> {
+                startTimeLeftTimer();
+              }
+            });
+        }
+      });
+  }
+
+  function startTimeLeftTimer():Void
+  {
+    FlxTween.tween(timeTextName, {alpha: 0}, 1,
+      {
+        startDelay: 6,
+        ease: FlxEase.quartOut,
+        onComplete: function(_) {
+          timeText.text = FlxStringUtil.formatTime(secondsTotal);
+          FlxTween.tween(timeText, {alpha: 1}, 1,
+            {
+              ease: FlxEase.quartOut,
+              onComplete: (_) -> {
+                startNameTimer();
+              }
+            });
+        }
+      });
   }
 
   /**

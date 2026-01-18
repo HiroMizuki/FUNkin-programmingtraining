@@ -138,6 +138,23 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.hapticsIntensityMultiplier = value;
     }, null, Preferences.hapticsIntensityMultiplier, 0.1, 5, 0.1, 1);
     #end
+    createPrefItemEnum('Progress Bar', 'If changed, will affect the contents shown on the time bar.', [
+      "Time Left" => TimeBarMode.LEFT,
+      "Song Name" => TimeBarMode.NAME,
+      "Time Elapsed" => TimeBarMode.ELAPSED,
+      "Alternative" => TimeBarMode.ALT,
+      "Disabled" => TimeBarMode.OFF,
+    ], function(key:String, value:TimeBarMode):Void {
+      Preferences.timeBarMode = value;
+    }, switch (Preferences.timeBarMode)
+      {
+        case TimeBarMode.LEFT: "Notes Only";
+        case TimeBarMode.NAME: "Song Name";
+        case TimeBarMode.ELAPSED: "Time Elapsed";
+        case TimeBarMode.ALT: "Alternative";
+        case TimeBarMode.OFF: "Disabled";
+        default: "Time Left";
+      });
     createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
       function(value:Bool):Void {
         Preferences.flashingLights = value;
