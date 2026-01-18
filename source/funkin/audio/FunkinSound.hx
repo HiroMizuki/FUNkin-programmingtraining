@@ -1,7 +1,6 @@
 package funkin.audio;
 
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.tweens.FlxTween;
@@ -16,7 +15,6 @@ import funkin.Paths.PathsFunction;
 import lime.app.Promise;
 import lime.media.AudioSource;
 import openfl.events.Event;
-import openfl.media.Sound;
 import openfl.media.SoundChannel;
 import openfl.media.SoundMixer;
 
