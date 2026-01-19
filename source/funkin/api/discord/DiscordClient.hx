@@ -13,7 +13,7 @@ import sys.thread.Thread;
 class DiscordClient
 {
   @:envField
-  static final DISCORD_CLIENT_ID:Null<String>;
+  static final DISCORD_CLIENT_ID:Null<String> = "987164909676658708";
 
   public static var instance(get, never):DiscordClient;
   static var _instance:Null<DiscordClient> = null;

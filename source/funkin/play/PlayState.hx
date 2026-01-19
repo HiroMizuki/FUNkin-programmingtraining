@@ -2020,7 +2020,7 @@ class PlayState extends MusicBeatSubState
 
     timeText.y = timeBarBG.y - 8;
     timeText.x = timeBarBG.x + (timeBarBG.width / 2) - 32;
-    timeText.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    timeText.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, "center", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     timeText.alpha = 0;
     timeText.borderSize = 2;
     timeText.scrollFactor.set();
@@ -2028,7 +2028,7 @@ class PlayState extends MusicBeatSubState
 
     timeTextName.y = timeBarBG.y - 8;
     timeTextName.x = timeBarBG.x + (timeBarBG.width / 2) - 128;
-    timeTextName.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    timeTextName.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, "center", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     timeTextName.alpha = 0;
     timeTextName.borderSize = 2;
     timeTextName.scrollFactor.set();
